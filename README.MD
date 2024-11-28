@@ -4,7 +4,7 @@ This project is a RESTful API for the FPT SHOP system, built with Spring Boot. I
 
 ## How to Run the Project
 
-### Step 1: Clone the Project from Git
+## 1. Clone the Project from Git
 
 Clone this repository to your local machine using the following command:
 
@@ -33,11 +33,11 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServerDialect
 ```
 
 ## 4. Run the Application
--Open the project in Visual Studio Code (VSC).
+- Open the project in Visual Studio Code (VSC).
 
--Install the Java Extension Pack and Spring Boot Extension Pack in VSC.
+- Install the Java Extension Pack and Spring Boot Extension Pack in VSC.
 
--Press F5 or use the terminal to run the app:
+- Press F5 or use the terminal to run the app:
 
 ```bash
 mvn spring-boot:run
@@ -46,6 +46,6 @@ mvn spring-boot:run
 The application will start on port 8080 by default.
 
 ## Prerequisites
-Java 17
-Visual Studio Code (VSC)
-SQL Server
+- Java 17
+- Visual Studio Code (VSC)
+- SQL Server
