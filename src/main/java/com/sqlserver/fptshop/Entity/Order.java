@@ -1,10 +1,15 @@
 package com.sqlserver.fptshop.Entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
+@Data
 @Table(name = "[Order]")
 public class Order {
     @Id
@@ -28,9 +33,13 @@ public class Order {
     @JoinColumn(name = "CustomerID", nullable = false)
     private Customer customer;
 
-//    @ManyToOne
-//    @JoinColumn(name = "DeliveryID")
-//    private Delivery delivery;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<OrderIncludesProductLine> orderIncludesProductLines;
+
+    // @ManyToOne
+    // @JoinColumn(name = "DeliveryID")
+    // private Delivery delivery;
 
     // Getters and Setters
 }
