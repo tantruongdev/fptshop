@@ -56,7 +56,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
   String deleteEmployee(@Param("employee_id") Integer employeeId);
 
   // Reactivate employee
-  @Procedure(procedureName = "ReactiveEmployee")
+  @Procedure(procedureName = "reactive_employee")
   String reactiveEmployee(@Param("employee_id") Integer employeeId);
 
 }
