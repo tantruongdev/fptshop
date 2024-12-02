@@ -30,7 +30,7 @@ public class StoreController {
 
   // Read Store by ID
   @GetMapping("/{id}")
-  public ResponseEntity<Store> getStoreById(@PathVariable("id") String storeID) {
+  public ResponseEntity<Store> getStoreById(@PathVariable("id") Integer storeID) {
     return storeService.getStoreById(storeID)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
@@ -38,7 +38,7 @@ public class StoreController {
 
   // Delete Store
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteStore(@PathVariable("id") String storeID) {
+  public ResponseEntity<Void> deleteStore(@PathVariable("id") Integer storeID) {
     storeService.deleteStore(storeID);
     return ResponseEntity.noContent().build();
   }

@@ -24,5 +24,6 @@ public class EmployeeDTO {
   @Temporal(TemporalType.DATE)
   private Date superviseDate;
   private Integer storeId;
+  private Boolean isDeleted;
 
 }

@@ -48,6 +48,7 @@ public class EmployeeService {
     public String updateEmployee(Integer employeeId, EmployeeDTO employeeDTO) {
         return employeeRepository.updateEmployee(
                 employeeId,
+                employeeDTO.getIdentityCard(),
                 employeeDTO.getLname(),
                 employeeDTO.getFname(),
                 employeeDTO.getPhoneNumber(),
@@ -56,7 +57,8 @@ public class EmployeeService {
                 employeeDTO.getEmail(),
                 employeeDTO.getSupervisorId(),
                 employeeDTO.getSuperviseDate(),
-                employeeDTO.getStoreId());
+                employeeDTO.getStoreId(),
+                employeeDTO.getIsDeleted());
     }
 
     @Transactional

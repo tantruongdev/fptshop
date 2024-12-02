@@ -39,6 +39,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
   @Procedure(procedureName = "update_employee")
   String updateEmployee(
       @Param("employee_id") Integer employeeId,
+      @Param("identity_card") String identityCard,
       @Param("lname") String lname,
       @Param("fname") String fname,
       @Param("phone_number") String phoneNumber,
@@ -47,7 +48,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
       @Param("email") String email,
       @Param("supervisor_id") Integer supervisorId,
       @Param("supervise_date") Date superviseDate,
-      @Param("store_id") Integer storeId);
+      @Param("store_id") Integer storeId,
+      @Param("is_deleted") Boolean isDeleted);
 
   // Delete employee
   @Procedure(procedureName = "delete_employee")

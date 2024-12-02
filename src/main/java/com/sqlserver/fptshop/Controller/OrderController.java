@@ -28,33 +28,33 @@ public class OrderController {
   }
 
   @GetMapping("/{id}")
-  public Order getOrderById(@PathVariable String id) {
+  public Order getOrderById(@PathVariable Integer id) {
     return orderService.getOrderById(id);
   }
 
   @PatchMapping("/{id}")
-  public Order updateOrderPatch(@PathVariable String id, @RequestBody Order order) {
+  public Order updateOrderPatch(@PathVariable Integer id, @RequestBody Order order) {
     return orderService.updateOrderStatus(id, order);
   }
 
   @PutMapping("/{id}")
-  public Order updateOrder(@PathVariable String id, @RequestBody Order order) {
+  public Order updateOrder(@PathVariable Integer id, @RequestBody Order order) {
     return orderService.updateOrder(id, order);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteOrder(@PathVariable String id) {
+  public ResponseEntity<Void> deleteOrder(@PathVariable Integer id) {
     orderService.deleteOrder(id);
     return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/{orderId}/productlines")
-  public Order addProductLineToOrder(@PathVariable String orderId, @RequestBody OrderIncludesProductLine productLine) {
+  public Order addProductLineToOrder(@PathVariable Integer orderId, @RequestBody OrderIncludesProductLine productLine) {
     return orderService.addProductLineToOrder(orderId, productLine);
   }
 
   @DeleteMapping("/{orderId}/productlines")
-  public void removeProductLineFromOrder(@PathVariable String orderId,
+  public void removeProductLineFromOrder(@PathVariable Integer orderId,
       @RequestBody OrderIncludesProductLineId productLineId) {
     orderService.deleteProductLine(productLineId);
     return;
