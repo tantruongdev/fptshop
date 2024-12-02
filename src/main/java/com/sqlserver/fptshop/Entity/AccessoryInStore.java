@@ -17,13 +17,15 @@ public class AccessoryInStore {
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "AccessoryID", referencedColumnName = "ID", nullable = false)
+  // @JoinColumn(name = "AccessoryID", referencedColumnName = "ID", nullable =
+  // false)
   private Accessory accessory;
 
   @ManyToOne
-  @JoinColumn(name = "StoreID", referencedColumnName = "StoreID", nullable = false)
+  // @JoinColumn(name = "StoreID", referencedColumnName = "StoreID", nullable =
+  // false)
   private Store store;
 
-  @Column(name = "StockQuantity", nullable = false)
+  // @Column(name = "StockQuantity", nullable = false)
   private Integer stockQuantity;
 }

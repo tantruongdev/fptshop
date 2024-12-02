@@ -1,69 +1,32 @@
 package com.sqlserver.fptshop.Entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.util.Date;
+import lombok.Data;
 
 @Entity
-@Table(name = "Promotion")
+@Table(name = "promotion")
+@Data
 public class Promotion {
     @Id
-    private String promotionID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer promotionId;
 
-    @Column(name = "Type")
+    @Column(length = 20)
     private String type;
 
-    @Column(name = "Name", nullable = false)
+    @Column(nullable = false, length = 70)
     private String name;
 
-    @Column(name = "StartDate", nullable = false)
-    private Date startDate;
+    @Column(nullable = false)
+    private LocalDate startDate;
 
-    @Column(name = "EndDate", nullable = false)
-    private Date endDate;
-
-    // Getters and Setters
-
-
-    public String getPromotionID() {
-        return promotionID;
-    }
-
-    public void setPromotionID(String promotionID) {
-        this.promotionID = promotionID;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
+    @Column(nullable = false)
+    private LocalDate endDate;
 }

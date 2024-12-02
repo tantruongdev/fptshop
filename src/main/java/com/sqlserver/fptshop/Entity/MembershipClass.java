@@ -1,46 +1,27 @@
 package com.sqlserver.fptshop.Entity;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
-@Table(name = "MembershipClass")
+@Table(name = "membership_class")
+@Data
 public class MembershipClass {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(unique = true, nullable = false, length = 30)
     private String name;
 
-    @Column(name = "DiscountPercent", nullable = false)
+    @Column(unique = true, nullable = false)
     private Short discountPercent;
 
-    @Column(name = "MinimumNoPoint", nullable = false)
+    @Column(unique = true, nullable = false)
     private Integer minimumNoPoint;
-
-    // Getters and Setters
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Short getDiscountPercent() {
-        return discountPercent;
-    }
-
-    public void setDiscountPercent(Short discountPercent) {
-        this.discountPercent = discountPercent;
-    }
-
-    public Integer getMinimumNoPoint() {
-        return minimumNoPoint;
-    }
-
-    public void setMinimumNoPoint(Integer minimumNoPoint) {
-        this.minimumNoPoint = minimumNoPoint;
-    }
 }

@@ -22,7 +22,7 @@ public class AccessoryService {
   }
 
   @Transactional
-  public Optional<Accessory> getAccessoryDetails(String id) {
+  public Optional<Accessory> getAccessoryDetails(Integer id) {
     return accessoryRepository.findById(id);
   }
 
@@ -30,7 +30,7 @@ public class AccessoryService {
     return accessoryRepository.save(accessory);
   }
 
-  public void deleteAccessory(String id) {
+  public void deleteAccessory(Integer id) {
     accessoryRepository.deleteById(id);
   }
 }

@@ -24,12 +24,12 @@ public class StoreService {
   }
 
   // Read Store by ID
-  public Optional<Store> getStoreById(String storeID) {
+  public Optional<Store> getStoreById(Integer storeID) {
     return storeRepository.findById(storeID);
   }
 
   // Delete Store
-  public void deleteStore(String storeID) {
+  public void deleteStore(Integer storeID) {
     storeRepository.deleteById(storeID);
   }
 }

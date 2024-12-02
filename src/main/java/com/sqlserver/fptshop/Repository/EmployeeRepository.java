@@ -11,46 +11,50 @@ import org.springframework.stereotype.Repository;
 import com.sqlserver.fptshop.Entity.Employee;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, String> {
+public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
-  @Procedure(procedureName = "GetAllEmployees")
+  // Get all employees
+  @Procedure(procedureName = "get_all_employees")
   List<Employee> getAllEmployees();
 
-  @Procedure(procedureName = "GetEmployeeByID")
-  Employee getEmployeeById(@Param("EmployeeID") String employeeId);
+  // Get employee by ID
+  @Procedure(procedureName = "get_employee_by_id")
+  Employee getEmployeeById(@Param("employee_id") Integer employeeId);
 
-  @Procedure(name = "InsertEmployee")
+  // Insert employee
+  @Procedure(procedureName = "insert_employee")
   String insertEmployee(
-      @Param("EmployeeID") String employeeId,
-      @Param("IdentityCard") String identityCard,
-      @Param("Lname") String lname,
-      @Param("Fname") String fname,
-      @Param("PhoneNumber") String phoneNumber,
-      @Param("DOB") Date dob,
-      @Param("HireDate") Date hireDate,
-      @Param("Email") String email,
-      @Param("SupervisorID") String supervisorId,
-      @Param("SuperviseDate") Date superviseDate,
-      @Param("StoreID") String storeId);
+      @Param("identity_card") String identityCard,
+      @Param("lname") String lname,
+      @Param("fname") String fname,
+      @Param("phone_number") String phoneNumber,
+      @Param("dob") Date dob,
+      @Param("hire_date") Date hireDate,
+      @Param("email") String email,
+      @Param("supervisor_id") Integer supervisorId,
+      @Param("supervise_date") Date superviseDate,
+      @Param("store_id") Integer storeId);
 
-  @Procedure(name = "UpdateEmployee")
+  // Update employee
+  @Procedure(procedureName = "update_employee")
   String updateEmployee(
-      @Param("EmployeeID") String employeeId,
-      @Param("IdentityCard") String identityCard,
-      @Param("Lname") String lname,
-      @Param("Fname") String fname,
-      @Param("PhoneNumber") String phoneNumber,
-      @Param("DOB") Date dob,
-      @Param("HireDate") Date hireDate,
-      @Param("Email") String email,
-      @Param("SupervisorID") String supervisorId,
-      @Param("SuperviseDate") Date superviseDate,
-      @Param("StoreID") String storeId);
+      @Param("employee_id") Integer employeeId,
+      @Param("lname") String lname,
+      @Param("fname") String fname,
+      @Param("phone_number") String phoneNumber,
+      @Param("dob") Date dob,
+      @Param("hire_date") Date hireDate,
+      @Param("email") String email,
+      @Param("supervisor_id") Integer supervisorId,
+      @Param("supervise_date") Date superviseDate,
+      @Param("store_id") Integer storeId);
 
-  @Procedure(name = "DeleteEmployee")
-  String deleteEmployee(@Param("EmployeeID") String employeeId);
+  // Delete employee
+  @Procedure(procedureName = "delete_employee")
+  String deleteEmployee(@Param("employee_id") Integer employeeId);
 
-  @Procedure(name = "ReactiveEmployee")
-  String reactiveEmployee(@Param("EmployeeID") String employeeId);
+  // Reactivate employee
+  @Procedure(procedureName = "ReactiveEmployee")
+  String reactiveEmployee(@Param("employee_id") Integer employeeId);
 
 }

@@ -13,24 +13,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "[Order]")
 public class Order {
     @Id
-    private String orderID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer orderId;
 
     @Column(name = "OrderDate")
     @Temporal(TemporalType.DATE)
     private Date orderDate;
 
-    @Column(name = "OrderStatus", nullable = false)
+    @Column(nullable = false)
     private String orderStatus;
 
-    @Column(name = "TotalAmount", nullable = false)
+    @Column(nullable = false)
     private Double totalAmount;
 
     @ManyToOne
-    @JoinColumn(name = "EmployeeID")
+    @JoinColumn(name = "employee_id")
     private Employee employee;
 
     @ManyToOne
-    @JoinColumn(name = "CustomerID", nullable = false)
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)

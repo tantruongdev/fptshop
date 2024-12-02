@@ -1,32 +1,24 @@
 package com.sqlserver.fptshop.Entity;
 
-import java.util.List;
-
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
-@Table(name = "Accessory")
-@Data // Tự động tạo getter, setter, toString, equals, hashCode
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "accessory")
+@Data
 public class Accessory {
-
   @Id
-  @Column(name = "ID", length = 8)
-  private String id;
+  private Integer id;
 
-  @Column(name = "BatteryCapacity", length = 30)
   private String batteryCapacity;
 
-  // @OneToOne
-  // @JoinColumn(name = "ID", referencedColumnName = "ID")
-  // private ProductLine productLine;
-
-  @OneToMany(mappedBy = "accessory", cascade = CascadeType.ALL)
-  private List<Connection> connections;
-
-  // @OneToMany(mappedBy = "accessory", cascade = CascadeType.ALL)
-  // private List<AccessoryInStore> accessoryInStores;
-
+  @OneToOne
+  @MapsId
+  @JoinColumn(name = "id")
+  private ProductLine productLine;
 }

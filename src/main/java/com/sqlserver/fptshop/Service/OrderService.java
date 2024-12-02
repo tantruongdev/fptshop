@@ -27,11 +27,11 @@ public class OrderService {
     return orderRepository.findAll();
   }
 
-  public Order getOrderById(String orderId) {
+  public Order getOrderById(Integer orderId) {
     return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
   }
 
-  public Order updateOrderStatus(String orderId, Order orderDetails) {
+  public Order updateOrderStatus(Integer orderId, Order orderDetails) {
     Order order = getOrderById(orderId);
 
     order.setOrderStatus(orderDetails.getOrderStatus());
@@ -39,7 +39,7 @@ public class OrderService {
     return orderRepository.save(order);
   }
 
-  public Order updateOrder(String orderId, Order orderDetails) {
+  public Order updateOrder(Integer orderId, Order orderDetails) {
     Order order = getOrderById(orderId);
     order.setOrderDate(orderDetails.getOrderDate());
     order.setOrderStatus(orderDetails.getOrderStatus());
@@ -50,11 +50,11 @@ public class OrderService {
     return orderRepository.save(order);
   }
 
-  public void deleteOrder(String orderId) {
+  public void deleteOrder(Integer orderId) {
     orderRepository.deleteById(orderId);
   }
 
-  public Order addProductLineToOrder(String orderId, OrderIncludesProductLine productLine) {
+  public Order addProductLineToOrder(Integer orderId, OrderIncludesProductLine productLine) {
     Order order = getOrderById(orderId);
     productLine.setOrder(order); // Gán đơn hàng cho dòng sản phẩm
     order.getOrderIncludesProductLines().add(productLine); // Thêm dòng sản phẩm vào danh sách
@@ -67,7 +67,7 @@ public class OrderService {
   }
 
   // Thêm phương thức để xóa sản phẩm khỏi đơn hàng
-  public Order removeProductLineFromOrder(String orderId, OrderIncludesProductLineId productLineId) {
+  public Order removeProductLineFromOrder(Integer orderId, OrderIncludesProductLineId productLineId) {
     System.out.println("Attempting to remove product line from order: " + orderId);
     System.out.println("Product Line ID: " + productLineId);
 

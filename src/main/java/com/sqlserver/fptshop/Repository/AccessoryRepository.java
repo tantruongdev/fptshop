@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.sqlserver.fptshop.Entity.Accessory;
 
-public interface AccessoryRepository extends JpaRepository<Accessory, String> {
+public interface AccessoryRepository extends JpaRepository<Accessory, Integer> {
 }

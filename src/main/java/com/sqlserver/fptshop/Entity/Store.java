@@ -2,68 +2,29 @@ package com.sqlserver.fptshop.Entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-
+import lombok.Data;
 
 @Entity
-@Table(name = "Store")
+@Table(name = "store")
+@Data
 public class Store {
     @Id
-    private String storeID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer storeId;
 
-    @Column(name = "NumberOfEmployees", nullable = false)
+    @Column(nullable = false)
     private Integer numberOfEmployees;
 
-    @Column(name = "Area")
+    // @Column(precision = 15)
     private Double area;
 
-    @Column(name = "StoreName")
+    @Column(nullable = false, length = 50)
     private String storeName;
 
-    @Column(name = "Address", unique = true, nullable = false)
+    @Column(nullable = false, length = 150, unique = true)
     private String address;
-
-    // Getters and Setters
-
-    public String getStoreID() {
-        return storeID;
-    }
-
-    public void setStoreID(String storeID) {
-        this.storeID = storeID;
-    }
-
-    public Integer getNumberOfEmployees() {
-        return numberOfEmployees;
-    }
-
-    public void setNumberOfEmployees(Integer numberOfEmployees) {
-        this.numberOfEmployees = numberOfEmployees;
-    }
-
-    public Double getArea() {
-        return area;
-    }
-
-    public void setArea(Double area) {
-        this.area = area;
-    }
-
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public void setStoreName(String storeName) {
-        this.storeName = storeName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
 }

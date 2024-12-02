@@ -22,7 +22,7 @@ public class AccessoryController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Accessory> getAccessoryById(@PathVariable String id) {
+  public ResponseEntity<Accessory> getAccessoryById(@PathVariable Integer id) {
     return accessoryService.getAccessoryDetails(id)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
@@ -34,7 +34,7 @@ public class AccessoryController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Accessory> updateAccessory(@PathVariable String id, @RequestBody Accessory accessory) {
+  public ResponseEntity<Accessory> updateAccessory(@PathVariable Integer id, @RequestBody Accessory accessory) {
     if (!accessoryService.getAccessoryDetails(id).isPresent()) {
       return ResponseEntity.notFound().build();
     }
@@ -43,7 +43,7 @@ public class AccessoryController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteAccessory(@PathVariable String id) {
+  public ResponseEntity<Void> deleteAccessory(@PathVariable Integer id) {
     if (!accessoryService.getAccessoryDetails(id).isPresent()) {
       return ResponseEntity.notFound().build();
     }

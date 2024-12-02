@@ -1,111 +1,43 @@
 package com.sqlserver.fptshop.Entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
-@Table(name = "Customer")
+@Table(name = "customer")
+@Data
 public class Customer {
     @Id
-    private String customerID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer customerId;
 
-    @Column(name = "PhoneNumber", unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 10)
     private String phoneNumber;
 
-    @Column(name = "Email", unique = true)
+    @Column(unique = true, length = 50)
     private String email;
 
-    @Column(name = "RegistrationDate", nullable = false)
-    private Date registrationDate;
+    @Column(nullable = false)
+    private LocalDate registrationDate;
 
-    @Column(name = "ShippingAddress")
     private String shippingAddress;
 
-    @Column(name = "Lname", nullable = false)
+    @Column(nullable = false, length = 40)
     private String lname;
 
-    @Column(name = "Fname", nullable = false)
+    @Column(nullable = false, length = 15)
     private String fname;
 
-    @Column(name = "TotalPoints", nullable = false)
+    @Column(nullable = false)
     private Integer totalPoints;
 
     @ManyToOne
-    @JoinColumn(name = "MembershipClass", nullable = false)
+    @JoinColumn(name = "membership_class_id", nullable = false)
     private MembershipClass membershipClass;
 
-    // Getters and Setters
-
-    public String getCustomerID() {
-        return customerID;
-    }
-
-    public void setCustomerID(String customerID) {
-        this.customerID = customerID;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Date getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
-    public String getShippingAddress() {
-        return shippingAddress;
-    }
-
-    public void setShippingAddress(String shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
-
-    public String getLname() {
-        return lname;
-    }
-
-    public void setLname(String lname) {
-        this.lname = lname;
-    }
-
-    public String getFname() {
-        return fname;
-    }
-
-    public void setFname(String fname) {
-        this.fname = fname;
-    }
-
-    public Integer getTotalPoints() {
-        return totalPoints;
-    }
-
-    public void setTotalPoints(Integer totalPoints) {
-        this.totalPoints = totalPoints;
-    }
-
-    public MembershipClass getMembershipClass() {
-        return membershipClass;
-    }
-
-    public void setMembershipClass(MembershipClass membershipClass) {
-        this.membershipClass = membershipClass;
-    }
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
 }

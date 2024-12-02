@@ -1,147 +1,57 @@
 package com.sqlserver.fptshop.Entity;
 
-import jakarta.persistence.*;
+import java.sql.Date;
+import java.time.LocalDate;
 
-import java.util.Date;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
-@Table(name = "Employee")
+@Table(name = "employee")
+@Data
 public class Employee {
     @Id
-    private String employeeID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "employee_id")
+    private Integer employeeId;
 
-    @Column(name = "IdentityCard", unique = true, nullable = false)
+    @Column(unique = true, length = 12)
     private String identityCard;
 
-    @Column(name = "Lname", nullable = false)
+    @Column(nullable = false, length = 40)
     private String lname;
 
-    @Column(name = "Fname", nullable = false)
+    @Column(nullable = false, length = 15)
     private String fname;
 
-    @Column(name = "PhoneNumber", unique = true)
+    @Column(length = 10)
     private String phoneNumber;
 
-    @Column(name = "DOB", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date dob;
+    @Column(nullable = false)
+    private LocalDate dob;
 
-    @Column(name = "HireDate", nullable = false)
-    @Temporal(TemporalType.DATE)
+    @Column(name = "hire_date", nullable = false)
     private Date hireDate;
 
-    @Column(name = "Email")
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "SupervisorID")
+    @JoinColumn(name = "supervisor_id")
     private Employee supervisor;
 
-    @Column(name = "SuperviseDate")
-    @Temporal(TemporalType.DATE)
-    private Date superviseDate;
-
-    @Column(name = "IsDeleted", nullable = true)
-    private Boolean isDeleted = false;
+    private LocalDate superviseDate;
 
     @ManyToOne
-    @JoinColumn(name = "StoreID", nullable = false)
+    @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    // Getters and Setters
-    public String getEmployeeID() {
-        return employeeID;
-    }
-
-    public void setEmployeeID(String employeeID) {
-        this.employeeID = employeeID;
-    }
-
-    public String getIdentityCard() {
-        return identityCard;
-    }
-
-    public void setIdentityCard(String identityCard) {
-        this.identityCard = identityCard;
-    }
-
-    public String getLname() {
-        return lname;
-    }
-
-    public void setLname(String lname) {
-        this.lname = lname;
-    }
-
-    public String getFname() {
-        return fname;
-    }
-
-    public void setFname(String fname) {
-        this.fname = fname;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Date getDob() {
-        return dob;
-    }
-
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
-
-    public Date getHireDate() {
-        return hireDate;
-    }
-
-    public void setHireDate(Date hireDate) {
-        this.hireDate = hireDate;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Employee getSupervisor() {
-        return supervisor;
-    }
-
-    public void setSupervisor(Employee supervisor) {
-        this.supervisor = supervisor;
-    }
-
-    public Date getSuperviseDate() {
-        return superviseDate;
-    }
-
-    public void setSuperviseDate(Date superviseDate) {
-        this.superviseDate = superviseDate;
-    }
-
-    public Boolean getIsDeleted() {
-        return isDeleted != null ? isDeleted : false;
-    }
-
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted != null ? isDeleted : false;
-    }
-
-    public Store getStore() {
-        return store;
-    }
-
-    public void setStore(Store store) {
-        this.store = store;
-    }
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
 }

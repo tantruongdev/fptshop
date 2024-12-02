@@ -25,14 +25,13 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public Employee getEmployeeById(String employeeId) {
+    public Employee getEmployeeById(Integer employeeId) {
         return employeeRepository.getEmployeeById(employeeId);
     }
 
     @Transactional
     public String insertEmployee(EmployeeDTO employeeDTO) {
         return employeeRepository.insertEmployee(
-                employeeDTO.getEmployeeID(),
                 employeeDTO.getIdentityCard(),
                 employeeDTO.getLname(),
                 employeeDTO.getFname(),
@@ -40,35 +39,33 @@ public class EmployeeService {
                 employeeDTO.getDob(),
                 employeeDTO.getHireDate(),
                 employeeDTO.getEmail(),
-                employeeDTO.getSupervisorID(),
+                employeeDTO.getSupervisorId(),
                 employeeDTO.getSuperviseDate(),
-                employeeDTO.getStoreID());
-
+                employeeDTO.getStoreId());
     }
 
     @Transactional
-    public String updateEmployee(String employeeId, EmployeeDTO employeeDTO) {
+    public String updateEmployee(Integer employeeId, EmployeeDTO employeeDTO) {
         return employeeRepository.updateEmployee(
                 employeeId,
-                employeeDTO.getIdentityCard(),
                 employeeDTO.getLname(),
                 employeeDTO.getFname(),
                 employeeDTO.getPhoneNumber(),
                 employeeDTO.getDob(),
                 employeeDTO.getHireDate(),
                 employeeDTO.getEmail(),
-                employeeDTO.getSupervisorID(),
+                employeeDTO.getSupervisorId(),
                 employeeDTO.getSuperviseDate(),
-                employeeDTO.getStoreID());
+                employeeDTO.getStoreId());
     }
 
     @Transactional
-    public String deleteEmployee(String employeeId) {
+    public String deleteEmployee(Integer employeeId) {
         return employeeRepository.deleteEmployee(employeeId);
     }
 
     @Transactional
-    public String reactiveEmployee(String employeeId) {
+    public String reactiveEmployee(Integer employeeId) {
         return employeeRepository.reactiveEmployee(employeeId);
     }
 
