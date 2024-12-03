@@ -1,6 +1,8 @@
 package com.sqlserver.fptshop.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +71,22 @@ public class EmployeeService {
     @Transactional
     public String reactiveEmployee(Integer employeeId) {
         return employeeRepository.reactiveEmployee(employeeId);
+    }
+
+    @Transactional
+    public List<Employee> searchEmployeesForStore(String storeName, String employeeName, String phone,
+            String email, Integer sortOption) {
+        return employeeRepository.searchEmployeesForStore(storeName, employeeName, phone, email, sortOption);
+    }
+
+    @Transactional
+    public List<Map<String, Object>> getTopSellingProducts(Integer minQuantitySold, String date) {
+        return employeeRepository.getTopSellingProducts(minQuantitySold, date);
+    }
+
+    @Transactional
+    public List<Map<String, Object>> getCustomerOrders(String startDate, String endDate) {
+        return employeeRepository.getCustomerOrders(startDate, endDate);
     }
 
 }

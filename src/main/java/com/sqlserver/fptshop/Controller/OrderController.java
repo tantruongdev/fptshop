@@ -1,5 +1,6 @@
 package com.sqlserver.fptshop.Controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sqlserver.fptshop.Entity.Order;
+import com.sqlserver.fptshop.Entity.dto.CustomerOrderDTO;
 import com.sqlserver.fptshop.Entity.dto.OrderDTO;
 import com.sqlserver.fptshop.Entity.dto.ProductLineDTO;
 import com.sqlserver.fptshop.Service.OrderService;
@@ -69,4 +72,19 @@ public class OrderController {
 
   }
 
+  @GetMapping("/total-sales")
+  public ResponseEntity<Integer> calculateTotalSales(@RequestParam Integer productLineId,
+      @RequestParam LocalDate startDate, // Use LocalDate instead of String
+      @RequestParam LocalDate endDate) { // Use LocalDate instead of String
+    Integer totalSales = orderService.calculateTotalSales(productLineId, startDate, endDate);
+    return ResponseEntity.ok(totalSales);
+  }
+
+  @GetMapping("/highest-order-amount")
+  public ResponseEntity<List<CustomerOrderDTO>> getHighestOrderAmount(@RequestParam Integer number,
+      @RequestParam LocalDate startDate, // Use LocalDate instead of String
+      @RequestParam LocalDate endDate) { // Use LocalDate instead of String
+    List<CustomerOrderDTO> result = orderService.getHighestOrderAmount(number, startDate, endDate);
+    return ResponseEntity.ok(result);
+  }
 }

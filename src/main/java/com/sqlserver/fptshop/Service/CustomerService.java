@@ -1,16 +1,21 @@
 package com.sqlserver.fptshop.Service;
 
+import java.sql.Date;
 import java.time.LocalDate;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sqlserver.fptshop.Entity.Customer;
 import com.sqlserver.fptshop.Entity.MembershipClass;
 import com.sqlserver.fptshop.Entity.dto.CustomerCreateDTO;
 import com.sqlserver.fptshop.Repository.CustomerRepository;
+import com.sqlserver.fptshop.Repository.EmployeeRepository;
 import com.sqlserver.fptshop.Repository.MembershipClassRepository;
 
 @Service
@@ -18,6 +23,9 @@ public class CustomerService {
 
   @Autowired
   private CustomerRepository customerRepository;
+
+  @Autowired
+  private EmployeeRepository employeeRepository;
 
   @Autowired
   private MembershipClassRepository membershipClassRepository;
@@ -137,4 +145,5 @@ public class CustomerService {
     // Lưu lại sự thay đổi
     return customerRepository.save(customer);
   }
+
 }

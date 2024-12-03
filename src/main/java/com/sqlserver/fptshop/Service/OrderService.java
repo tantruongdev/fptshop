@@ -3,15 +3,21 @@ package com.sqlserver.fptshop.Service;
 import com.sqlserver.fptshop.Entity.Order;
 import com.sqlserver.fptshop.Entity.OrderIncludesProductLine;
 import com.sqlserver.fptshop.Entity.OrderIncludesProductLineId;
+import com.sqlserver.fptshop.Entity.dto.CustomerOrderDTO;
 import com.sqlserver.fptshop.Entity.dto.OrderDTO;
 import com.sqlserver.fptshop.Entity.dto.ProductLineDTO;
 import com.sqlserver.fptshop.Repository.OrderIncludesProductLineRepository;
 import com.sqlserver.fptshop.Repository.OrderRepository;
 
+import jakarta.persistence.Tuple;
+
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -75,4 +81,35 @@ public class OrderService {
         productLineDTO.getOrderId(),
         productLineDTO.getProductLineId());
   }
+
+  public Integer calculateTotalSales(Integer productLineId, LocalDate startDate, LocalDate endDate) {
+    return orderRepository.calculateTotalSales(productLineId, startDate, endDate);
+  }
+
+  public List<CustomerOrderDTO> getHighestOrderAmount(Integer number, LocalDate startDate, LocalDate endDate) {
+    List<Tuple> tuples = orderRepository.getHighestOrderAmount(number, startDate, endDate);
+    List<CustomerOrderDTO> result = new ArrayList<>();
+
+    for (Tuple tuple : tuples) {
+      CustomerOrderDTO customerOrderDTO = new CustomerOrderDTO();
+
+      // Ánh xạ các giá trị từ Tuple vào DTO
+      customerOrderDTO.setRank((Integer) tuple.get(0)); // Rank
+      customerOrderDTO.setCustomerId((Integer) tuple.get(1)); // Customer ID
+      customerOrderDTO.setLname((String) tuple.get(2)); // Last Name
+      customerOrderDTO.setFname((String) tuple.get(3)); // First Name
+
+      // Chuyển đổi BigDecimal thành Double cho trường totalOrderAmount
+      BigDecimal totalAmount = (BigDecimal) tuple.get(4);
+      customerOrderDTO.setTotalOrderAmount(totalAmount.doubleValue()); // Chuyển đổi BigDecimal thành Double
+
+      customerOrderDTO.setNoPurchases((Integer) tuple.get(5)); // Number of Purchases
+      customerOrderDTO.setTotalPoints((Integer) tuple.get(6)); // Total Points
+
+      result.add(customerOrderDTO);
+    }
+
+    return result;
+  }
+
 }
