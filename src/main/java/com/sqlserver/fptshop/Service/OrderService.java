@@ -3,8 +3,12 @@ package com.sqlserver.fptshop.Service;
 import com.sqlserver.fptshop.Entity.Order;
 import com.sqlserver.fptshop.Entity.OrderIncludesProductLine;
 import com.sqlserver.fptshop.Entity.OrderIncludesProductLineId;
+import com.sqlserver.fptshop.Entity.dto.OrderDTO;
+import com.sqlserver.fptshop.Entity.dto.ProductLineDTO;
 import com.sqlserver.fptshop.Repository.OrderIncludesProductLineRepository;
 import com.sqlserver.fptshop.Repository.OrderRepository;
+
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +23,13 @@ public class OrderService {
   @Autowired
   private OrderIncludesProductLineRepository orderIncludesProductLineRepository;
 
-  public Order createOrder(Order order) {
-    return orderRepository.save(order);
+  @Transactional
+  public String createOrder(OrderDTO orderDto) {
+    return orderRepository.createOrder(
+        orderDto.getCustomerId(),
+        orderDto.getEmployeeId(),
+        orderDto.getDeliveryId(),
+        orderDto.getOrderStatus());
   }
 
   public List<Order> getAllOrders() {
@@ -31,12 +40,9 @@ public class OrderService {
     return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
   }
 
-  public Order updateOrderStatus(Integer orderId, Order orderDetails) {
-    Order order = getOrderById(orderId);
+  public String updateOrderStatus(Integer orderId, OrderDTO orderDto) {
 
-    order.setOrderStatus(orderDetails.getOrderStatus());
-
-    return orderRepository.save(order);
+    return orderRepository.updateOrderStatus(orderDto.getOrderId(), orderDto.getOrderStatus());
   }
 
   public Order updateOrder(Integer orderId, Order orderDetails) {
@@ -50,45 +56,23 @@ public class OrderService {
     return orderRepository.save(order);
   }
 
-  public void deleteOrder(Integer orderId) {
-    orderRepository.deleteById(orderId);
+  public String deleteOrder(Integer orderId) {
+    return orderRepository.deleteOrder(orderId);
+
   }
 
-  public Order addProductLineToOrder(Integer orderId, OrderIncludesProductLine productLine) {
-    Order order = getOrderById(orderId);
-    productLine.setOrder(order); // Gán đơn hàng cho dòng sản phẩm
-    order.getOrderIncludesProductLines().add(productLine); // Thêm dòng sản phẩm vào danh sách
-    return orderRepository.save(order); // Lưu lại đơn hàng với dòng sản phẩm mới
+  public String addProductLineToOrder(ProductLineDTO productLineDTO) {
+
+    return orderIncludesProductLineRepository.addProductToOrder(
+        productLineDTO.getOrderId(),
+        productLineDTO.getProductLineId(),
+        productLineDTO.getPrice(),
+        productLineDTO.getQuantity());
   }
 
-  // Phương thức để xóa sản phẩm khỏi đơn hàng
-  public void deleteProductLine(OrderIncludesProductLineId productLineId) {
-    orderIncludesProductLineRepository.deleteById(productLineId);
-  }
-
-  // Thêm phương thức để xóa sản phẩm khỏi đơn hàng
-  public Order removeProductLineFromOrder(Integer orderId, OrderIncludesProductLineId productLineId) {
-    System.out.println("Attempting to remove product line from order: " + orderId);
-    System.out.println("Product Line ID: " + productLineId);
-
-    Order order = getOrderById(orderId);
-    // Tìm dòng sản phẩm trong danh sách
-    OrderIncludesProductLine productLineToRemove = null;
-    for (OrderIncludesProductLine productLine : order.getOrderIncludesProductLines()) {
-
-      if (productLine.getId().equals(productLineId)) {
-        productLineToRemove = productLine;
-        break;
-      }
-    }
-    if (productLineToRemove != null) {
-      order.getOrderIncludesProductLines().remove(productLineToRemove);
-      System.out.println("Product line found: " + productLineToRemove);
-    } else {
-      // Xóa dòng sản phẩm
-      System.out.println("No matching product line found.");
-    }
-
-    return orderRepository.save(order); // Lưu lại đơn hàng
+  public String removeProductLineFromOrder(ProductLineDTO productLineDTO) {
+    return orderIncludesProductLineRepository.removeProductFromOrder(
+        productLineDTO.getOrderId(),
+        productLineDTO.getProductLineId());
   }
 }

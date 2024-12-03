@@ -101,18 +101,30 @@ BEGIN
         FROM order_includes_product_line
         WHERE order_id = @OrderID;
 
-        -- Lấy phần trăm giảm giá từ membership_class
-        SELECT @MembershipDiscount = discount_percent
-        FROM membership_class
-        JOIN customer ON membership_class.id = customer.membership_class_id
-        WHERE customer.customer_id = @CustomerID;
+        -- Nếu giỏ hàng trống (không có sản phẩm nào)
+        IF @TotalAmount IS NULL OR @TotalAmount = 0
+        BEGIN
+            -- Đặt total_amount = 0
+            UPDATE [order]
+            SET total_amount = 0
+            WHERE order_id = @OrderID;
+        END
+        ELSE
+        BEGIN
+            -- Lấy phần trăm giảm giá từ membership_class
+            SELECT @MembershipDiscount = discount_percent
+            FROM membership_class
+            JOIN customer ON membership_class.id = customer.membership_class_id
+            WHERE customer.customer_id = @CustomerID;
 
-        -- Cập nhật TotalAmount sau khi áp dụng giảm giá
-        UPDATE [order]
-        SET total_amount = @TotalAmount - (@TotalAmount * @MembershipDiscount / 100)
-        WHERE order_id = @OrderID;
+            -- Cập nhật TotalAmount sau khi áp dụng giảm giá
+            UPDATE [order]
+            SET total_amount = @TotalAmount - (@TotalAmount * @MembershipDiscount / 100)
+            WHERE order_id = @OrderID;
+        END
     END
 END;
+
 
 
 
@@ -167,17 +179,18 @@ BEGIN
 
     -- Trả về giá trị
     RETURN @Value;
-END;
+END;							  
 
 
 -- Testcase 1 ---
 -- Thêm khách hàng mới
 INSERT INTO customer 
-(phone_number, email, registration_date, shipping_address, lname, fname, total_points, membership_class_id)
-VALUES 
-('0987651005', 'customer1005@example.com', GETDATE(), '456 Street B', 'Tran', 'B', 5, 1);
+(phone_number, email, registration_date, shipping_address, lname, fname)
+VALUES -- Lấy ID của khách hàng vừa thêm và lưu vào bảng tạm
+('0981234567', 'customer2227@example.com', GETDATE(), '456 Street B', 'Tran', 'B');
 
--- Lấy ID của khách hàng vừa thêm và lưu vào bảng tạm
+SELECT * FROM customer ; 
+
 DECLARE @CustomerID INT;
 
 -- Lấy ID của khách hàng vừa thêm
@@ -225,7 +238,7 @@ EXEC sp_SetGlobalVar 'OrderID2', @OrderId2;
 
 -- Thêm sản phẩm vào đơn hàng 2
 INSERT INTO order_includes_product_line (product_line_id, order_id, price, quantity) 
-VALUES (1, dbo.fn_GetGlobalVar('OrderID2'), 5000000, 2), 
+VALUES (1, dbo.fn_GetGlobalVar('OrderID2'), 600000, 2), 
        (2, dbo.fn_GetGlobalVar('OrderID2'), 150000, 1);
 
 -- Cập nhật trạng thái đơn hàng 2
@@ -277,3 +290,335 @@ WHERE order_id = dbo.fn_GetGlobalVar('OrderID3') AND product_line_id = 1;
 SELECT * 
 FROM [order]
 WHERE order_id = dbo.fn_GetGlobalVar('OrderID3');
+
+
+--------- PROCEDURE
+----- Create Order
+CREATE OR ALTER PROCEDURE spCreateOrder
+    @customerId INT,
+    @employeeId INT,
+    @deliveryId INT = NULL,
+    @orderStatus NVARCHAR(50) = 'pending', -- Trạng thái mặc định là 'pending'
+    @statusMessage NVARCHAR(255) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        -- Kiểm tra các giá trị NOT NULL
+        IF @customerId IS NULL
+        BEGIN
+            SET @statusMessage = 'Error: CustomerID cannot be NULL.';
+            RETURN;
+        END
+
+        IF @employeeId IS NULL
+        BEGIN
+            SET @statusMessage = 'Error: EmployeeID cannot be NULL.';
+            RETURN;
+        END
+
+        -- Kiểm tra customerId có tồn tại
+        IF NOT EXISTS (SELECT 1 FROM customer WHERE customer_id = @customerId)
+        BEGIN
+            SET @statusMessage = 'Error: CustomerID does not exist.';
+            RETURN;
+        END
+
+        -- Kiểm tra employeeId có tồn tại
+        IF NOT EXISTS (SELECT 1 FROM employee WHERE employee_id = @employeeId)
+        BEGIN
+            SET @statusMessage = 'Error: EmployeeID does not exist.';
+            RETURN;
+        END
+
+        -- Kiểm tra deliveryId nếu được cung cấp
+        IF @deliveryId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM delivery WHERE delivery_id = @deliveryId)
+        BEGIN
+            SET @statusMessage = 'Error: DeliveryID does not exist.';
+            RETURN;
+        END
+
+        -- Kiểm tra trạng thái đơn hàng hợp lệ
+        IF @orderStatus NOT IN ('pending', 'shipping', 'completed')
+        BEGIN
+            SET @statusMessage = 'Error: Invalid order status. Allowed values are pending, shipping, or completed.';
+            RETURN;
+        END
+
+        -- Tạo đơn hàng mới
+        INSERT INTO [order] (order_date, order_status, total_amount, employee_id, customer_id, delivery_id)
+        VALUES (GETDATE(), @orderStatus, 0, @employeeId, @customerId, @deliveryId);
+
+        -- Lấy orderId của đơn hàng vừa thêm
+        DECLARE @orderId INT;
+        SET @orderId = SCOPE_IDENTITY();
+
+        SET @statusMessage = 'Success: Order created with OrderID = ' + CAST(@orderId AS NVARCHAR);
+    END TRY
+    BEGIN CATCH
+        SET @statusMessage = 'Error: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+
+CREATE OR ALTER PROCEDURE spAddProductToOrder
+    @orderId INT,
+    @productLineId INT,
+    @price DECIMAL(10, 2),
+    @quantity INT,
+    @statusMessage NVARCHAR(255) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        -- Kiểm tra giá trị NULL hoặc không hợp lệ
+        IF @orderId IS NULL
+        BEGIN
+            SET @statusMessage = 'Error: OrderID cannot be NULL.';
+            RETURN;
+        END
+
+        IF @productLineId IS NULL
+        BEGIN
+            SET @statusMessage = 'Error: ProductLineID cannot be NULL.';
+            RETURN;
+        END
+
+        IF @price IS NULL OR @price <= 0
+        BEGIN
+            SET @statusMessage = 'Error: Invalid price. It must be greater than 0.';
+            RETURN;
+        END
+
+        IF @quantity IS NULL OR @quantity = 0
+        BEGIN
+            SET @statusMessage = 'Error: Quantity cannot be NULL or zero.';
+            RETURN;
+        END
+
+        -- Kiểm tra orderId có tồn tại
+        IF NOT EXISTS (SELECT 1 FROM [order] WHERE order_id = @orderId)
+        BEGIN
+            SET @statusMessage = 'Error: OrderID does not exist.';
+            RETURN;
+        END
+
+        -- Kiểm tra productLineId có tồn tại
+        IF NOT EXISTS (SELECT 1 FROM product_line WHERE id = @productLineId)
+        BEGIN
+            SET @statusMessage = 'Error: ProductLineID does not exist.';
+            RETURN;
+        END
+
+        -- Kiểm tra sản phẩm đã tồn tại trong đơn hàng hay chưa
+        IF EXISTS (SELECT 1 FROM order_includes_product_line WHERE order_id = @orderId AND product_line_id = @productLineId)
+        BEGIN
+            -- Nếu đã tồn tại, cập nhật số lượng
+            UPDATE order_includes_product_line
+            SET quantity = quantity + @quantity
+            WHERE order_id = @orderId AND product_line_id = @productLineId;
+
+            SET @statusMessage = 'Success: Quantity updated for ProductLineID = ' + CAST(@productLineId AS NVARCHAR) + ' in OrderID = ' + CAST(@orderId AS NVARCHAR);
+        END
+        ELSE
+        BEGIN
+            -- Nếu chưa tồn tại, thêm sản phẩm mới
+            INSERT INTO order_includes_product_line (product_line_id, order_id, price, quantity)
+            VALUES (@productLineId, @orderId, @price, @quantity);
+
+            SET @statusMessage = 'Success: Product added to OrderID = ' + CAST(@orderId AS NVARCHAR);
+        END
+    END TRY
+    BEGIN CATCH
+        SET @statusMessage = 'Error: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+DECLARE @statusMessage NVARCHAR(255);
+EXEC spAddProductToOrder @orderId = 15, @productLineId = 1, @price = 500000, @quantity = 3, @statusMessage = @statusMessage OUTPUT;
+PRINT @statusMessage;
+
+--- remove product from order
+CREATE OR ALTER PROCEDURE spRemoveProductFromOrder
+    @orderId INT,
+    @productLineId INT,
+    @statusMessage NVARCHAR(255) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        -- Kiểm tra giá trị NULL
+        IF @orderId IS NULL
+        BEGIN
+            SET @statusMessage = 'Error: OrderID cannot be NULL.';
+            RETURN;
+        END
+
+        IF @productLineId IS NULL
+        BEGIN
+            SET @statusMessage = 'Error: ProductLineID cannot be NULL.';
+            RETURN;
+        END
+
+        -- Kiểm tra orderId có tồn tại
+        IF NOT EXISTS (SELECT 1 FROM [order] WHERE order_id = @orderId)
+        BEGIN
+            SET @statusMessage = 'Error: OrderID does not exist.';
+            RETURN;
+        END
+
+        -- Kiểm tra productLineId có trong đơn hàng
+        IF NOT EXISTS (SELECT 1 FROM order_includes_product_line WHERE order_id = @orderId AND product_line_id = @productLineId)
+        BEGIN
+            SET @statusMessage = 'Error: ProductLineID does not exist in the specified OrderID.';
+            RETURN;
+        END
+
+        -- Xóa sản phẩm khỏi đơn hàng
+        DELETE FROM order_includes_product_line
+        WHERE order_id = @orderId AND product_line_id = @productLineId;
+
+        SET @statusMessage = 'Success: Product removed from OrderID = ' + CAST(@orderId AS NVARCHAR);
+    END TRY
+    BEGIN CATCH
+        SET @statusMessage = 'Error: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+--- update order status
+CREATE OR ALTER PROCEDURE spUpdateOrderStatus
+    @orderId INT,
+    @orderStatus NVARCHAR(50),
+    @statusMessage NVARCHAR(255) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        -- Kiểm tra giá trị NULL
+        IF @orderId IS NULL
+        BEGIN
+            SET @statusMessage = 'Error: OrderID cannot be NULL.';
+            RETURN;
+        END
+
+        IF @orderStatus IS NULL
+        BEGIN
+            SET @statusMessage = 'Error: OrderStatus cannot be NULL.';
+            RETURN;
+        END
+
+        -- Kiểm tra trạng thái hợp lệ
+        IF @orderStatus NOT IN ('pending', 'shipping', 'completed')
+        BEGIN
+            SET @statusMessage = 'Error: Invalid order status. Allowed values are pending, shipping, or completed.';
+            RETURN;
+        END
+
+        -- Kiểm tra orderId có tồn tại
+        IF NOT EXISTS (SELECT 1 FROM [order] WHERE order_id = @orderId)
+        BEGIN
+            SET @statusMessage = 'Error: OrderID does not exist.';
+            RETURN;
+        END
+
+        -- Lấy trạng thái hiện tại của đơn hàng
+        DECLARE @currentStatus NVARCHAR(50);
+        SELECT @currentStatus = order_status
+        FROM [order]
+        WHERE order_id = @orderId;
+
+        -- Kiểm tra nếu trạng thái mới trùng với trạng thái hiện tại
+        IF @currentStatus = @orderStatus
+        BEGIN
+            SET @statusMessage = 'Warning: The new status is the same as the current status. Update skipped.';
+            RETURN;
+        END
+
+        -- Cập nhật trạng thái đơn hàng
+        UPDATE [order]
+        SET order_status = @orderStatus
+        WHERE order_id = @orderId;
+
+        SET @statusMessage = 'Success: OrderID = ' + CAST(@orderId AS NVARCHAR) + ' updated to status: ' + @orderStatus;
+    END TRY
+    BEGIN CATCH
+        SET @statusMessage = 'Error: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+--- delete an order
+CREATE OR ALTER PROCEDURE spDeleteOrder
+    @orderId INT,
+    @statusMessage NVARCHAR(255) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        -- Kiểm tra xem orderId có tồn tại không
+        IF NOT EXISTS (SELECT 1 FROM [order] WHERE order_id = @orderId)
+        BEGIN
+            SET @statusMessage = 'Error: OrderID does not exist.';
+            RETURN;
+        END
+
+        -- Kiểm tra xem order có đang trong trạng thái shipping hay completed, không thể xóa khi đang giao hàng hoặc đã hoàn thành
+        DECLARE @orderStatus NVARCHAR(20);
+        SELECT @orderStatus = order_status
+        FROM [order]
+        WHERE order_id = @orderId;
+
+        IF @orderStatus IN ('shipping', 'completed')
+        BEGIN
+            SET @statusMessage = 'Error: Order is in shipping or completed status and cannot be deleted.';
+            RETURN;
+        END
+
+        ---- Xóa các sản phẩm trong order trước khi xóa order
+        --DELETE FROM order_includes_product_line WHERE order_id = @orderId;
+
+        -- Xóa order
+        DELETE FROM [order] WHERE order_id = @orderId;
+
+        SET @statusMessage = 'Success: OrderID ' + CAST(@orderId AS NVARCHAR) + ' has been deleted successfully.';
+    END TRY
+    BEGIN CATCH
+        -- Bắt lỗi và trả về thông báo lỗi
+        SET @statusMessage = 'Error: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+DECLARE @statusMessage NVARCHAR(255);
+EXEC spCreateOrder @customerId = 17, @employeeId = 2, @deliveryId = NULL, @statusMessage = @statusMessage OUTPUT;
+PRINT @statusMessage;
+
+
+DECLARE @statusMessage NVARCHAR(255);
+EXEC spAddProductToOrder @orderId = 14, @productLineId = 1, @price = 500000, @quantity = 2, @statusMessage = @statusMessage OUTPUT;
+PRINT @statusMessage;
+
+
+DECLARE @statusMessage NVARCHAR(255);
+EXEC spRemoveProductFromOrder @orderId = 14, @productLineId = 1, @statusMessage = @statusMessage OUTPUT;
+PRINT @statusMessage;
+
+
+DECLARE @statusMessage NVARCHAR(255);
+EXEC spUpdateOrderStatus @orderId = 14, @orderStatus = 'pending', @statusMessage = @statusMessage OUTPUT;
+PRINT @statusMessage; -- Output: Warning: The new status is the same as the current status. Update skipped.
+
+
+DECLARE @statusMessage NVARCHAR(255);
+EXEC spUpdateOrderStatus @orderId = 14, @orderStatus = 'completed', @statusMessage = @statusMessage OUTPUT;
+PRINT @statusMessage; -- Output: Success: OrderID = 101 updated to status: completed.
+
+

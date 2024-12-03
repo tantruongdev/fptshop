@@ -10,13 +10,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
-@Table(name = "[Order]")
+@Table(name = "[order]")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderId;
 
-    @Column(name = "OrderDate")
     @Temporal(TemporalType.DATE)
     private Date orderDate;
 

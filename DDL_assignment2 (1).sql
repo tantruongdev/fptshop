@@ -250,6 +250,15 @@ CREATE TABLE order_includes_product_line (
 		FOREIGN KEY (order_id) REFERENCES [order](order_id)
 );
 
+ALTER TABLE order_includes_product_line
+DROP CONSTRAINT fk_order_id_order_includes_product_line;
+
+
+ALTER TABLE order_includes_product_line
+ADD CONSTRAINT fk_order_id_order_includes_product_line
+FOREIGN KEY (order_id) REFERENCES [order](order_id)
+ON DELETE CASCADE;
+
 CREATE TABLE product_line_managed_by_employee (
 	product_line_id		INT,
 	employee_id			INT,

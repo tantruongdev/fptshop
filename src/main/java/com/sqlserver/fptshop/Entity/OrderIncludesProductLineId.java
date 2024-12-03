@@ -10,11 +10,9 @@ import java.io.Serializable;
 @Data
 public class OrderIncludesProductLineId implements Serializable {
 
-  @Column(name = "ProductLineID")
-  private String productLineID;
+  private String productLineId;
 
-  @Column(name = "OrderID")
-  private String orderID;
+  private String orderId;
 
   // Getters, Setters, equals, and hashCode
   // Tương tự như ở trên

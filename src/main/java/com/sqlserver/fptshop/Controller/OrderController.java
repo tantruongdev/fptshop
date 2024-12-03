@@ -1,14 +1,23 @@
 package com.sqlserver.fptshop.Controller;
 
-import com.sqlserver.fptshop.Entity.Order;
-import com.sqlserver.fptshop.Entity.OrderIncludesProductLine;
-import com.sqlserver.fptshop.Entity.OrderIncludesProductLineId;
-import com.sqlserver.fptshop.Service.OrderService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.sqlserver.fptshop.Entity.Order;
+import com.sqlserver.fptshop.Entity.dto.OrderDTO;
+import com.sqlserver.fptshop.Entity.dto.ProductLineDTO;
+import com.sqlserver.fptshop.Service.OrderService;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -18,8 +27,8 @@ public class OrderController {
   private OrderService orderService;
 
   @PostMapping
-  public Order createOrder(@RequestBody Order order) {
-    return orderService.createOrder(order);
+  public String createOrder(@RequestBody OrderDTO orderdDto) {
+    return orderService.createOrder(orderdDto);
   }
 
   @GetMapping
@@ -33,8 +42,8 @@ public class OrderController {
   }
 
   @PatchMapping("/{id}")
-  public Order updateOrderPatch(@PathVariable Integer id, @RequestBody Order order) {
-    return orderService.updateOrderStatus(id, order);
+  public String updateOrderStatus(@PathVariable Integer id, @RequestBody OrderDTO orderDto) {
+    return orderService.updateOrderStatus(id, orderDto);
   }
 
   @PutMapping("/{id}")
@@ -43,21 +52,21 @@ public class OrderController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteOrder(@PathVariable Integer id) {
-    orderService.deleteOrder(id);
-    return ResponseEntity.noContent().build();
+  public String deleteOrder(@PathVariable Integer id) {
+
+    return orderService.deleteOrder(id);
   }
 
   @PostMapping("/{orderId}/productlines")
-  public Order addProductLineToOrder(@PathVariable Integer orderId, @RequestBody OrderIncludesProductLine productLine) {
-    return orderService.addProductLineToOrder(orderId, productLine);
+  public String addProductLineToOrder(@PathVariable Integer orderId, @RequestBody ProductLineDTO productLineDTO) {
+    return orderService.addProductLineToOrder(productLineDTO);
   }
 
   @DeleteMapping("/{orderId}/productlines")
-  public void removeProductLineFromOrder(@PathVariable Integer orderId,
-      @RequestBody OrderIncludesProductLineId productLineId) {
-    orderService.deleteProductLine(productLineId);
-    return;
+  public String removeProductLineFromOrder(@PathVariable Integer orderId,
+      @RequestBody ProductLineDTO productLineDTO) {
+    return orderService.removeProductLineFromOrder(productLineDTO);
+
   }
 
 }

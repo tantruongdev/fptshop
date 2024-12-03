@@ -20,7 +20,6 @@ public class Customer {
     @Column(unique = true, length = 50)
     private String email;
 
-    @Column(nullable = false)
     private LocalDate registrationDate;
 
     private String shippingAddress;
@@ -31,13 +30,11 @@ public class Customer {
     @Column(nullable = false, length = 15)
     private String fname;
 
-    @Column(nullable = false)
     private Integer totalPoints;
 
     @ManyToOne
-    @JoinColumn(name = "membership_class_id", nullable = false)
+    @JoinColumn(name = "membership_class_id")
     private MembershipClass membershipClass;
 
-    @Column(nullable = false)
-    private Boolean isDeleted = false;
+    private Integer isDeleted = 0;
 }
