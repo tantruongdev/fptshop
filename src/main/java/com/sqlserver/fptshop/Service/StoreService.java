@@ -18,6 +18,19 @@ public class StoreService {
     return storeRepository.save(store);
   }
 
+  public Store updateStore(Integer storeId, Store store) {
+    Optional<Store> existingStore = storeRepository.findById(storeId);
+    if (existingStore.isPresent()) {
+      Store updatedStore = existingStore.get();
+      updatedStore.setStoreName(store.getStoreName());
+      updatedStore.setAddress(store.getAddress());
+      updatedStore.setNumberOfEmployees(store.getNumberOfEmployees());
+      updatedStore.setArea(store.getArea());
+      return storeRepository.save(updatedStore);
+    }
+    return null;
+  }
+
   // Read All Stores
   public List<Store> getAllStores() {
     return storeRepository.findAll();

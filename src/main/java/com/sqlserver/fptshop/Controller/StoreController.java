@@ -15,10 +15,29 @@ public class StoreController {
   private StoreService storeService;
 
   // Create or Update Store
+
   @PostMapping
   public ResponseEntity<Store> saveStore(@RequestBody Store store) {
-    Store savedStore = storeService.saveStore(store);
-    return ResponseEntity.ok(savedStore);
+    if (store == null) {
+      return ResponseEntity.badRequest().build(); // Trả về lỗi nếu không có dữ liệu
+    }
+
+    try {
+      Store savedStore = storeService.saveStore(store);
+      return ResponseEntity.ok(savedStore);
+    } catch (Exception e) {
+      return ResponseEntity.status(500).body(null); // Trả về lỗi nếu có ngoại lệ khi lưu
+    }
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<Store> updateStore(@PathVariable("id") Integer storeId, @RequestBody Store store) {
+    Store updatedStore = storeService.updateStore(storeId, store);
+    if (updatedStore != null) {
+      return ResponseEntity.ok(updatedStore);
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   // Read All Stores

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sqlserver.fptshop.Entity.Employee;
+import com.sqlserver.fptshop.Entity.Order;
 import com.sqlserver.fptshop.Entity.dto.EmployeeDTO;
 import com.sqlserver.fptshop.Service.EmployeeService;
 
@@ -62,7 +63,7 @@ public class EmployeeController {
 
     @GetMapping("/search")
     public ResponseEntity<List<Employee>> searchEmployeesForStore(
-            @RequestParam String storeName,
+            @RequestParam(required = false) String storeName,
             @RequestParam(required = false) String employeeName,
             @RequestParam(required = false) String phone,
             @RequestParam(required = false) String email,
@@ -82,8 +83,8 @@ public class EmployeeController {
 
     @GetMapping("/customer-orders")
     public ResponseEntity<List<Map<String, Object>>> getCustomerOrders(
-            @RequestParam String startDate,
-            @RequestParam String endDate) {
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
         List<Map<String, Object>> orders = employeeService.getCustomerOrders(startDate, endDate);
         return ResponseEntity.ok(orders);
     }

@@ -5,6 +5,10 @@ CREATE OR ALTER FUNCTION CalculateTotalSales(@p_ProductLineID Int, @p_StartDate 
 RETURNS INT
 AS
 BEGIN
+   -- Gán giá trị mặc định nếu tham số không được cung cấp
+    SET @p_StartDate = ISNULL(@p_StartDate, (SELECT MIN([order].order_date) FROM [order]));
+    SET @p_EndDate = ISNULL(@p_EndDate, GETDATE());
+
 	IF NOT EXISTS (SELECT 1 FROM product_line WHERE id = @p_ProductLineID)
 	BEGIN
 		--PRINT N'Invalid product line.';
@@ -38,6 +42,11 @@ END;
 
 --Test Function 2
 select dbo.CalculateTotalSales(1, '2023-01-01', '2023-12-31');
+select dbo.CalculateTotalSales(1, '2023-01-01', NULL);
+select dbo.CalculateTotalSales(1, NULL, '2023-12-31');
+select dbo.CalculateTotalSales(1, NULL, NULL);
+SELECT TOP 1 * FROM [order];
+
 
 --Function2 (Xử lý Throw)
 CREATE OR ALTER FUNCTION HighestOrderAmount(@p_number Int, @p_StartDate Date, @p_EndDate Date)
@@ -51,6 +60,10 @@ RETURNS @list TABLE (
 	TotalPoints Int )
 AS
 BEGIN
+  -- Gán giá trị mặc định nếu tham số không được cung cấp
+    SET @p_StartDate = ISNULL(@p_StartDate, (SELECT MIN(order_date) FROM [order]));
+    SET @p_EndDate = ISNULL(@p_EndDate, GETDATE());
+
 	IF (@p_number < 1)
 	BEGIN
 		--PRINT N'Invalid number of customers.';
@@ -96,4 +109,7 @@ BEGIN
 END;
 
 --Test Function 2
-select * from dbo.HighestOrderAmount(3, '2023-01-01', '2024-01-01');
+select * from dbo.HighestOrderAmount(3, '2023-01-01', '2025-01-01');
+select * from dbo.HighestOrderAmount(3, '2023-01-01', NULL);
+select * from dbo.HighestOrderAmount(3, NULL, '2025-01-01');
+select * from dbo.HighestOrderAmount(3, NULL, NULL);

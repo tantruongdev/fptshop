@@ -5,7 +5,7 @@ GO
 
 --procedure1
 CREATE OR ALTER PROCEDURE SearchEmployeesForStore
-    @StoreName NVARCHAR(100),         
+    @StoreName NVARCHAR(100) = NULL,         
     @EmployeeName NVARCHAR(100) = NULL, 
     @Phone NVARCHAR(20) = NULL,       
     @Email NVARCHAR(100) = NULL,      
@@ -21,7 +21,9 @@ BEGIN
     SELECT e.*
     FROM Employee e
     JOIN Store s ON e.store_id = s.store_id
-    WHERE s.store_name LIKE '%' + @StoreName + '%'
+    WHERE 
+		(@StoreName IS NULL OR s.store_name LIKE '%' + @StoreName + '%')
+
           AND (@EmployeeName IS NULL OR e.fname = @EmployeeName)
           AND (@Phone IS NULL OR e.phone_number LIKE '%' + @Phone + '%')
           AND (@Email IS NULL OR e.email LIKE '%' + @Email + '%')
@@ -37,11 +39,30 @@ BEGIN
 END;
 
 --test thủ tục
+UPDATE employee 
+SET store_id = 2
+WHERE employee_id = 2;
+
+SELECT * FROM employee;
+
 EXEC SearchEmployeesForStore
     @StoreName = 'Phone Store',
     @EmployeeName = 'Phi',
     @SortOption = 2;
 
+EXEC SearchEmployeesForStore
+    @StoreName = 'Phone Store',
+
+    @SortOption = 2;
+
+EXEC SearchEmployeesForStore
+    @StoreName = 'Phone Store',
+    @EmployeeName = 'Phi';
+
+EXEC SearchEmployeesForStore
+    @StoreName = 'e';
+
+EXEC SearchEmployeesForStore;
 
 --procedure 2
 CREATE OR ALTER PROCEDURE GetTopSellingProducts
@@ -76,10 +97,14 @@ EXEC GetTopSellingProducts @MinQuantitySold = 1, @Date = '2023-11-08';
 
 --procedure 3 (optional)
 CREATE OR ALTER PROCEDURE GetCustomerOrders
-    @StartDate DATE,
-    @EndDate DATE
+    @StartDate DATE = NULL,
+    @EndDate DATE = NULL
 AS
 BEGIN
+    -- Gán giá trị mặc định nếu các tham số không được cung cấp
+    SET @StartDate = ISNULL(@StartDate, (SELECT MIN(order_date) FROM [order]));
+    SET @EndDate = ISNULL(@EndDate, GETDATE());
+
     SELECT 
         o.order_id AS OrderID,
         o.order_date AS OrderDate,
@@ -99,5 +124,9 @@ BEGIN
 END;
 GO
 
+
 -- test thủ tục
 EXEC GetCustomerOrders @StartDate = '2023-01-01', @EndDate = '2024-01-01';
+EXEC GetCustomerOrders @StartDate = '2023-01-01';
+EXEC GetCustomerOrders  @EndDate = '2024-01-01';
+EXEC GetCustomerOrders  ;

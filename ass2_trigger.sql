@@ -1,6 +1,9 @@
-﻿--- Trigger 1
+﻿USE assignment2;
+GO
+
+--- Trigger 1
 --- Update customer point and membership class
-CREATE TRIGGER UpdateCustomerPointsAndMembershipClass
+CREATE OR ALTER TRIGGER UpdateCustomerPointsAndMembershipClass
 ON [order]
 AFTER INSERT, UPDATE
 AS
@@ -65,6 +68,7 @@ BEGIN
 END;
 
 
+GO
 
 --- Trigger 2
 --- Update Order Total Amount
@@ -187,7 +191,7 @@ END;
 INSERT INTO customer 
 (phone_number, email, registration_date, shipping_address, lname, fname)
 VALUES -- Lấy ID của khách hàng vừa thêm và lưu vào bảng tạm
-('0981234567', 'customer2227@example.com', GETDATE(), '456 Street B', 'Tran', 'B');
+('0281234567', 'customer12227@example.com', GETDATE(), '456 Street B', 'Tran', 'B');
 
 SELECT * FROM customer ; 
 
